@@ -1,0 +1,5 @@
+{"id":"c338c6ec-c4fc-43fe-be4f-9565443d53b2","data":{"count":1,"city":"Berlin"},"meta":{"label":"Person","graphs":["badb1375-efc0-485f-9913-86d269ba0483"]}}
+{"id":"d8fdcc08-f877-4706-92ed-fa9dd28e3fdf","data":{"count":3,"city":"Dresden"},"meta":{"label":"Person","graphs":["badb1375-efc0-485f-9913-86d269ba0483"]}}
+{"id":"2a81143e-6309-4dd4-b2e1-43b6aa45720a","data":{"count":2,"city":"Leipzig"},"meta":{"label":"Person","graphs":["badb1375-efc0-485f-9913-86d269ba0483"]}}
+{"id":"ddb0025a-8643-4bb4-be1d-a894cff25ef0","data":{"count":3},"meta":{"label":"Tag","graphs":["badb1375-efc0-485f-9913-86d269ba0483"]}}
+{"id":"de29dd57-24e2-43f3-9a77-8d5bae25cdd7","data":{"count":2},"meta":{"label":"Forum","graphs":["badb1375-efc0-485f-9913-86d269ba0483"]}}

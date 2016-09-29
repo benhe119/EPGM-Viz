@@ -1,0 +1,6 @@
+{"id":"5","source":"1","target":"1","data":{"count":223263},"meta":{"label":"follows","graphs":["1"]}}
+{"id":"6","source":"1","target":"2","data":{"count":224321},"meta":{"label":"follows","graphs":["1"]}}
+{"id":"7","source":"1","target":"3","data":{"count":2421},"meta":{"label":"follows","graphs":["1"]}}
+{"id":"8","source":"2","target":"1","data":{"count":195321},"meta":{"label":"follows","graphs":["1"]}}
+{"id":"9","source":"2","target":"2","data":{"count":176534},"meta":{"label":"follows","graphs":["1"]}}
+{"id":"10","source":"2","target":"3","data":{"count":1298},"meta":{"label":"follows","graphs":["1"]}}
