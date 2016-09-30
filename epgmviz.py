@@ -37,8 +37,13 @@ edgePath = ""
 
 # JSON property of the vertices specifying their sizes
 sizeProp = ""
+
+# additional properties to be shown in the label
+vertexLabelProp = ""
+edgeLabelProp = ""
+
 try:
-	opts, args = getopt.getopt(arguments, "hpg:v:e:", ["sizeProp="])
+	opts, args = getopt.getopt(arguments, "hpg:v:e:", ["sizeProp=", "vl=", "el="])
 except getopt.GetoptError:
 	print "usage: python epgmviz.py [options] -g <graphsfile> -v <vertexfile> -e <edgefile>"
 	print "Try `python epgmviz.py -h' for more information."
@@ -52,19 +57,25 @@ for opt, arg in opts :
 		print "                   with one pie fraction per graph it is contained in"
 		print "-sizeProp <attr> : specified numerical property of the vertices, that"
 		print "                   is used to scale the vertices, best results between 1 and 4"
+		print "-vl <attr>       : additional attribute to be shown in vertex label"
+		print "-el <attr>	: additional attribute to be shown in edge label"
 		print "-g <graphfile>   : path to the JSON file containing the graph information"
 		print "-v <vertexfile>  : path to the JSON file containing the vertex information"
 		print "-e <edgefile>    : path to the JSON file containing the edge information"
 		sys.exit()
 	if opt == "-p" :
 		drawVerticesAsPies = True		
-	if opt == "-sizeProp" :
+	elif opt == "--sizeProp" :
 		sizeProp = arg
-	if opt == "-g" :
+	elif opt == "--vl" :
+		vertexLabelProp = arg
+	elif opt == "--el" :
+		edgeLabelProp = arg
+	elif opt == "-g" :
 		graphPath = arg
-	if opt == "-v" :
+	elif opt == "-v" :
 		vertexPath = arg
-	if opt == "-e" :
+	elif opt == "-e" :
 		edgePath = arg
 	
 if graphPath == "" or vertexPath == "" or edgePath == "" :
@@ -116,12 +127,9 @@ eColors = graph.new_edge_property("vector<double>")
 
 table = Gtk.Table(1,1,False)
 
-# list of Gtk.Label, used to manage property table content
-labelList = []
-
 # read graphs
 
-input = open(graphPath)
+input = open(graphPath, "r")
 while(True):
 	
 	line = input.readline()
@@ -140,7 +148,7 @@ while(True):
 # read vertices
 
 vertexCount = 0
-input = open("/home/niklas/Desktop/tool/input/screenshot_data/vertices.json", "r")
+input = open(vertexPath, "r")
 while(True): 	
 	
 	line = input.readline()
@@ -186,8 +194,10 @@ while(True):
 	
 	vColors[vertex] = defaultVertexColor
 	# by default, the vertex label is defined by the label property
+	
 	vLabels[vertex] = label 
-	# vLabels[vertex] = label + " (" + object["data"]["city"] + ")" 
+	if vertexLabelProp != "" :
+		vLabels[vertex] = label + " (" + str(object["data"][vertexLabelProp]) + ") "
 
 	# compute the size of the fractions if vertices shall be drawn as pies	
 	if drawVerticesAsPies :	 
@@ -206,7 +216,7 @@ while(True):
 
 
 # read edges
-input = open("/home/niklas/Desktop/tool/input/screenshot_data/edges.json", "r")
+input = open(edgePath, "r")
 while(True):
 
 	line = input.readline()
@@ -229,8 +239,9 @@ while(True):
 	eColors[edge] = [0.1, 0.1, 0.1, 1]
 
 	# by default the vertex label is defined by the label property 
-	eLabels[edge] = label
-	# eLabels[edge] = label + " (" + str(object["data"]["count"]) + ")"
+	eLabels[edge] = label 
+	if edgeLabelProp != "" :
+		eLabels[edge] = label + " (" + str(object["data"][edgeLabelProp]) + ") "
 
 # compute the initial layout of the graph
 pos1 = sfdp_layout(graph, p=10, C=0.9)
@@ -251,6 +262,7 @@ if drawVerticesAsPies == True :
 				edge_color = eColors,
 				edge_text_color = eColors,
 				edge_marker_size = 20,
+				# the halo and highlight color changes are disabled
 				vertex_halo_color = [0, 0, 0, 0],
 				highlight_color = [0, 0, 0, 0])
 			
@@ -267,6 +279,7 @@ else :
 				edge_color = eColors,
 				edge_text_color = eColors,
 				edge_marker_size = 20,
+				# the halo and highlight color changes are disabled
 				vertex_halo_color = [0, 0, 0, 0],
 				highlight_color = [0, 0, 0, 0])
 
@@ -282,7 +295,6 @@ def update_click(widget, event):
 	# defines behaviour when graph widget is being clicked on
 	global graph
 	global table 
-	global labelList
 	global previous
 
 	# get the vertex nearest to the position that has been clicked on
@@ -309,38 +321,30 @@ def update_click(widget, event):
 		# increased by one because the label needs an extra row
 		requiredRows = len(props)+1
 
-		print len(labelList)
+		# clear the table
+		for l in table.get_children() :
+			table.remove(l)
 
-		# use existing labels, else create new ones
-		for i in range(len(labelList)/2, requiredRows) :
-			key = Gtk.Label("")
-			labelList.append(key)
-			
-			value = Gtk.Label("")
-			labelList.append(value)
-
-		print len(labelList)
 
 		# the first row is always the vertex label
-		labelList[0].set_markup("<b><span size=\"" + str(fontSize*786) + "\">Label:</span></b>")
-		labelList[1].set_markup("<span size=\"" + str(fontSize*786) + "\">" + vertexLabels[vertex] + "</span>")
-	
-		# fill the rest of the table
-		for j in range(1, len(labelList)/2) :
-			key = labelList[2*j]
-			value = labelList[2*j+1]
-			if j<requiredRows :	
-				key.set_markup("<b><span size=\"" + str(fontSize*786) + "\">" + props[j-1][0] + ":</span></b>")
-				value.set_markup("<span size=\"" + str(fontSize*786) + "\">" + props[j-1][1] + "</span>")
-				table.attach(key, 0, 1, j, j+1)		
-				table.attach(value, 1, 2, j, j+1)
-			else :
-				labelList[2*j].set_text("")
-				labelList[2*j+1].set_text("")
-				table.remove(labelList[2*j])
-				table.remove(labelList[2*j+1])
-		labelList = labelList[:requiredRows*2]
+		label0 = Gtk.Label()
+		label0.set_markup("<b><span size=\"" + str(fontSize*786) + "\">Label:</span></b>")
+		table.attach(label0, 0, 1, 0, 1)
 
+		label1 = Gtk.Label()
+		label1.set_markup("<span size=\"" + str(fontSize*786) + "\">" + vertexLabels[vertex] + "</span>")
+		table.attach(label1, 1, 2, 0, 1)
+
+		# all other rows are the vertex properties, ordered by key name
+		for i in range(1, requiredRows) :
+			keyLabel = Gtk.Label()
+			keyLabel.set_markup("<b><span size=\"" + str(fontSize*786) + "\">" + props[i-1][0] + ":</span></b>")
+			table.attach(keyLabel, 0, 1, i, i+1)	
+			
+			valueLabel = Gtk.Label()
+			valueLabel.set_markup("<span size=\"" + str(fontSize*786) + "\">" + props[i-1][1] + "</span>")
+			table.attach(valueLabel, 1, 2, i, i+1)
+	
 	# show the table and all its child widgets
 	table.show_all()
 
@@ -365,20 +369,15 @@ Gtk.Box.pack_start = pack_start
 
 cid = GObject.idle_add(update_state)
 
+# build the window
 vbox = Gtk.VBox()
 
 hbox = Gtk.HBox()
 
 border = Gtk.Label("   ")
 
-label0 = Gtk.Label("")
-labelList.append(label0)
-label1 = Gtk.Label("")
-labelList.append(label1)
-
-table.attach(label0,0,1,0,1)
-table.attach(label1,1,2,0,1)
 table.set_row_spacings(4)
+table.set_col_spacings(4)
 
 backgroundBox = Gtk.EventBox()
 backgroundBox.set_visible_window(True)
