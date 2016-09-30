@@ -12,11 +12,11 @@ import math
 # default parameters
 
 # default size of vertices, used when no size property is specified
-defaultVertexSize = 60
+defaultVertexSize = 230
 
 # font size
 # graph-tool scales vertices so that the labels fit, so a big font size could result in vertices of varying sizes
-fontSize = 15
+fontSize = 30
 
 # width of the edges
 eWidth = 2
@@ -254,10 +254,12 @@ if drawVerticesAsPies == True :
 				vertex_pie_fractions = pieFractions,
 				vertex_text = vLabels,
 				vertex_font_size = fontSize,
+				vertex_font_family = "georgia",
 				vertex_pen_width = vertexHighlightWidth,
 				vertex_pie_colors = defaultPieColors,
 				edge_text = eLabels,
 				edge_font_size = fontSize,
+				edge_font_family = "georgia",
 				edge_pen_width = eWidth,
 				edge_color = eColors,
 				edge_text_color = eColors,
@@ -271,10 +273,14 @@ else :
 				vertex_size = vertexSize,
 				vertex_text = vLabels,
 				vertex_font_size = fontSize,
+				vertex_font_family = "arial",
+				vertex_font_weight = 1.0,
 				vertex_pen_width = 0,
 				vertex_fill_color = vColors,
 				edge_text = eLabels,
 				edge_font_size = fontSize,
+				edge_font_family = "arial",
+				edge_font_weight = 1.0,
 				edge_pen_width = eWidth,
 				edge_color = eColors,
 				edge_text_color = eColors,
